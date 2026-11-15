@@ -1,0 +1,2 @@
+# SDK oficial de Model Context Protocol (versión 2.x: usa MCPServer, antes llamado FastMCP)
+mcp>=2.0,<3

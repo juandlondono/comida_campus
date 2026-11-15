@@ -1,0 +1,806 @@
+{
+ "metadatos": {
+  "organizacion": {
+   "id": "unibague",
+   "nombre": "Universidad de Ibagué",
+   "ciudad": "Ibagué"
+  },
+  "descripcion": "Inventario real recolectado en campo. Puede cambiar: se actualiza desde el panel de vendedores o editando esta semilla.",
+  "fecha_consulta": "2026-11-03",
+  "responsables": "Juan Diego Londoño, Johan Ospina",
+  "moneda": "COP",
+  "hora_pico_almuerzo": [
+   "11:30",
+   "14:30"
+  ],
+  "clasificacion_vegetariana": {
+   "si": "sin carne, pollo ni pescado (puede tener huevo y lácteos)",
+   "no": "contiene carne, pollo, pescado o mariscos",
+   "por_confirmar": "ingredientes no conocidos suficientemente"
+  },
+  "pendiente": [
+   "horarios de atención",
+   "tiempos de fila y de caminata",
+   "información vegana",
+   "listado completo de bebidas de María Café",
+   "composición del almuerzo y de los pokes de Latte"
+  ],
+  "supuestos": [
+   "Se considera hora de almuerzo de 11:30 a 14:30 para advertir sobre establecimientos concurridos."
+  ]
+ },
+ "catalogos": {
+  "latte_general": [
+   {
+    "id": "lt_sand_cuadrado",
+    "nombre": "Sándwich cuadrado de jamón y queso",
+    "categoria": "sándwich",
+    "precio_min": 4500,
+    "precio_max": 4500,
+    "vegetariano": "no"
+   },
+   {
+    "id": "lt_sand_maiz",
+    "nombre": "Sándwich de pan de maíz con jamón, queso y lechuga",
+    "categoria": "sándwich",
+    "precio_min": 8000,
+    "precio_max": 8000,
+    "vegetariano": "no"
+   },
+   {
+    "id": "lt_cubano",
+    "nombre": "Cubano de queso y arequipe",
+    "categoria": "panadería",
+    "precio_min": 3500,
+    "precio_max": 3500,
+    "vegetariano": "si"
+   },
+   {
+    "id": "lt_torta_carne",
+    "nombre": "Torta de carne con arepa",
+    "categoria": "comida rápida",
+    "precio_min": 4500,
+    "precio_max": 4500,
+    "vegetariano": "no"
+   },
+   {
+    "id": "lt_emp_carne",
+    "nombre": "Empanada de carne",
+    "categoria": "comida rápida",
+    "precio_min": 3000,
+    "precio_max": 3000,
+    "vegetariano": "no"
+   },
+   {
+    "id": "lt_dedos_queso",
+    "nombre": "Dedos de queso",
+    "categoria": "panadería",
+    "precio_min": 3500,
+    "precio_max": 3500,
+    "vegetariano": "si",
+    "nota": "Confirmar ingredientes de la masa."
+   },
+   {
+    "id": "lt_dedos_bocadillo",
+    "nombre": "Dedos de bocadillo",
+    "categoria": "panadería",
+    "precio_min": 3500,
+    "precio_max": 3500,
+    "vegetariano": "si",
+    "nota": "Confirmar ingredientes de la masa."
+   },
+   {
+    "id": "lt_pokes",
+    "nombre": "Poke",
+    "categoria": "plato",
+    "precio_min": 16000,
+    "precio_max": 16000,
+    "vegetariano": "por_confirmar",
+    "nota": "Ingredientes variables; composición no registrada."
+   },
+   {
+    "id": "lt_papas",
+    "nombre": "Papas de paquete",
+    "categoria": "snack",
+    "precio_min": 3000,
+    "precio_max": 4000,
+    "vegetariano": "por_confirmar",
+    "nota": "Precio según referencia."
+   },
+   {
+    "id": "lt_gaseosas",
+    "nombre": "Gaseosa",
+    "categoria": "bebida fría",
+    "precio_min": 3000,
+    "precio_max": 4500,
+    "vegetariano": "si",
+    "nota": "Precio según referencia."
+   },
+   {
+    "id": "lt_cafes",
+    "nombre": "Cafés y bebidas calientes",
+    "categoria": "bebida caliente",
+    "precio_min": 3000,
+    "precio_max": 5000,
+    "vegetariano": "si",
+    "nota": "Varias preparaciones; precio según bebida."
+   },
+   {
+    "id": "lt_dulces",
+    "nombre": "Dulces",
+    "categoria": "snack",
+    "precio_min": 200,
+    "precio_max": 5000,
+    "vegetariano": "por_confirmar",
+    "nota": "Precio y composición según el dulce."
+   },
+   {
+    "id": "lt_yogures",
+    "nombre": "Yogur / Bonyurt",
+    "categoria": "snack",
+    "precio_min": 4000,
+    "precio_max": 5500,
+    "vegetariano": "si",
+    "nota": "Precio según presentación."
+   },
+   {
+    "id": "lt_tortas",
+    "nombre": "Torta (porción)",
+    "categoria": "postre",
+    "precio_min": 4000,
+    "precio_max": 4000,
+    "vegetariano": "por_confirmar",
+    "nota": "Ingredientes según la torta."
+   },
+   {
+    "id": "lt_banano",
+    "nombre": "Banano",
+    "categoria": "fruta",
+    "precio_min": 1000,
+    "precio_max": 1000,
+    "vegetariano": "si"
+   },
+   {
+    "id": "lt_avena",
+    "nombre": "Avena",
+    "categoria": "bebida fría",
+    "precio_min": 3000,
+    "precio_max": 3000,
+    "vegetariano": "si"
+   }
+  ]
+ },
+ "establecimientos": [
+  {
+   "id": "latte_central",
+   "nombre": "Latte Central",
+   "marca": "Cafeterías Latte",
+   "tipo": "cafetería",
+   "ubicacion": "Bloque de salones 4",
+   "zona": "Bloque 4",
+   "referencias": [
+    "bloque 4",
+    "salones"
+   ],
+   "horario": null,
+   "afluencia": {
+    "nivel": "alta",
+    "cuando": "hora de almuerzo",
+    "nota": "Muy concurrida a la hora de almuerzo. Única sede de Latte con desayunos y almuerzos."
+   },
+   "catalogo": "latte_general",
+   "productos": [
+    {
+     "id": "lc_arepa_salchichon",
+     "nombre": "Arepa con salchichón",
+     "categoria": "comida rápida",
+     "precio_min": 2000,
+     "precio_max": 2000,
+     "vegetariano": "no",
+     "nota": "Exclusivo de Latte Central."
+    },
+    {
+     "id": "lc_desayuno_huevos",
+     "nombre": "Desayuno: huevos al gusto (generalmente con chocolate o café en leche)",
+     "categoria": "desayuno",
+     "precio_min": 13000,
+     "precio_max": 13000,
+     "vegetariano": "si",
+     "nota": "Exclusivo de Latte Central.",
+     "disponible_hasta": "10:00"
+    },
+    {
+     "id": "lc_almuerzo_dia",
+     "nombre": "Almuerzo del día",
+     "categoria": "almuerzo",
+     "precio_min": 15500,
+     "precio_max": 15500,
+     "vegetariano": "por_confirmar",
+     "nota": "Exclusivo de Latte Central. Composición no registrada: confirmar en el establecimiento.",
+     "disponible_hasta": "14:30"
+    }
+   ]
+  },
+  {
+   "id": "latte_derecho",
+   "nombre": "Latte Derecho",
+   "marca": "Cafeterías Latte",
+   "tipo": "cafetería",
+   "ubicacion": "Facultad de Derecho",
+   "zona": "Derecho",
+   "referencias": [
+    "derecho"
+   ],
+   "horario": null,
+   "afluencia": null,
+   "catalogo": "latte_general",
+   "productos": []
+  },
+  {
+   "id": "latte_idiomas",
+   "nombre": "Latte Idiomas",
+   "marca": "Cafeterías Latte",
+   "tipo": "cafetería",
+   "ubicacion": "Zona de Idiomas",
+   "zona": "Idiomas",
+   "referencias": [
+    "idiomas"
+   ],
+   "horario": null,
+   "afluencia": null,
+   "catalogo": "latte_general",
+   "productos": []
+  },
+  {
+   "id": "latte_ingenieria",
+   "nombre": "Latte Ingeniería",
+   "marca": "Cafeterías Latte",
+   "tipo": "cafetería",
+   "ubicacion": "Facultad de Ingeniería",
+   "zona": "Ingeniería",
+   "referencias": [
+    "ingenieria"
+   ],
+   "horario": null,
+   "afluencia": null,
+   "catalogo": "latte_general",
+   "productos": []
+  },
+  {
+   "id": "latte_cep",
+   "nombre": "Latte CEP",
+   "marca": "Cafeterías Latte",
+   "tipo": "cafetería",
+   "ubicacion": "Bloque CEP",
+   "zona": "CEP",
+   "referencias": [
+    "cep",
+    "bloque cep"
+   ],
+   "horario": null,
+   "afluencia": null,
+   "catalogo": "latte_general",
+   "productos": []
+  },
+  {
+   "id": "maria_cafe",
+   "nombre": "María Café",
+   "marca": null,
+   "tipo": "cafetería",
+   "ubicacion": "Patio de Banderas, al lado de la biblioteca (zona central)",
+   "zona": "Patio de Banderas",
+   "referencias": [
+    "patio de banderas",
+    "biblioteca",
+    "centro"
+   ],
+   "horario": null,
+   "afluencia": {
+    "nivel": "baja",
+    "nota": "Puesto pequeño con mesas acogedoras; no suele estar lleno."
+   },
+   "descripcion": "Desayunos, bebidas frías y calientes, comidas rápidas, panadería y postres.",
+   "advertencia_vegetariana": "Clasificación de panadería y postres preliminar: confirmar recetas.",
+   "productos": [
+    {
+     "id": "mc_omelette_jyq",
+     "nombre": "Omelette de jamón y queso",
+     "categoria": "desayuno",
+     "precio_min": 14000,
+     "precio_max": 14000,
+     "vegetariano": "no"
+    },
+    {
+     "id": "mc_omelette_pollo",
+     "nombre": "Omelette de pollo y queso",
+     "categoria": "desayuno",
+     "precio_min": 16000,
+     "precio_max": 16000,
+     "vegetariano": "no"
+    },
+    {
+     "id": "mc_omelette_ranchero",
+     "nombre": "Omelette ranchero",
+     "categoria": "desayuno",
+     "precio_min": 16000,
+     "precio_max": 16000,
+     "vegetariano": "por_confirmar"
+    },
+    {
+     "id": "mc_omelette_cordero",
+     "nombre": "Omelette de cordero",
+     "categoria": "desayuno",
+     "precio_min": 16000,
+     "precio_max": 16000,
+     "vegetariano": "no"
+    },
+    {
+     "id": "mc_huevos_revueltos",
+     "nombre": "Huevos revueltos",
+     "categoria": "desayuno",
+     "precio_min": 11000,
+     "precio_max": 11000,
+     "vegetariano": "si"
+    },
+    {
+     "id": "mc_parfait",
+     "nombre": "Parfait",
+     "categoria": "desayuno",
+     "precio_min": 9000,
+     "precio_max": 9000,
+     "vegetariano": "si"
+    },
+    {
+     "id": "mc_ensalada_aderezos",
+     "nombre": "Ensalada de frutas con aderezos",
+     "categoria": "fruta",
+     "precio_min": 9000,
+     "precio_max": 9000,
+     "vegetariano": "si"
+    },
+    {
+     "id": "mc_ensalada_sencilla",
+     "nombre": "Ensalada de frutas sencilla",
+     "categoria": "fruta",
+     "precio_min": 6500,
+     "precio_max": 6500,
+     "vegetariano": "si"
+    },
+    {
+     "id": "mc_vaso_frutas",
+     "nombre": "Vaso de frutas",
+     "categoria": "fruta",
+     "precio_min": 5500,
+     "precio_max": 5500,
+     "vegetariano": "si"
+    },
+    {
+     "id": "mc_malteadas",
+     "nombre": "Malteada (varios sabores)",
+     "categoria": "bebida fría",
+     "precio_min": 13900,
+     "precio_max": 15900,
+     "vegetariano": "si",
+     "nota": "Precio según sabor."
+    },
+    {
+     "id": "mc_sorbete_agua",
+     "nombre": "Sorbete en agua",
+     "categoria": "bebida fría",
+     "precio_min": 6500,
+     "precio_max": 7500,
+     "vegetariano": "si"
+    },
+    {
+     "id": "mc_sorbete_leche",
+     "nombre": "Sorbete en leche",
+     "categoria": "bebida fría",
+     "precio_min": 6500,
+     "precio_max": 7500,
+     "vegetariano": "si"
+    },
+    {
+     "id": "mc_limonada_trad",
+     "nombre": "Limonada tradicional",
+     "categoria": "bebida fría",
+     "precio_min": 4000,
+     "precio_max": null,
+     "vegetariano": "si",
+     "nota": "Desde $4.000."
+    },
+    {
+     "id": "mc_limonada_sabores",
+     "nombre": "Limonada de sabores",
+     "categoria": "bebida fría",
+     "precio_min": null,
+     "precio_max": 10000,
+     "vegetariano": "si",
+     "nota": "Hasta $10.000; precio mínimo no registrado."
+    },
+    {
+     "id": "mc_sodificadas",
+     "nombre": "Bebida sodificada",
+     "categoria": "bebida fría",
+     "precio_min": 8000,
+     "precio_max": 10000,
+     "vegetariano": "si"
+    },
+    {
+     "id": "mc_agua",
+     "nombre": "Agua sin gas",
+     "categoria": "bebida fría",
+     "precio_min": 3000,
+     "precio_max": 3000,
+     "vegetariano": "si"
+    },
+    {
+     "id": "mc_agua_gas",
+     "nombre": "Agua con gas",
+     "categoria": "bebida fría",
+     "precio_min": 4000,
+     "precio_max": 4000,
+     "vegetariano": "si"
+    },
+    {
+     "id": "mc_te_hatsu",
+     "nombre": "Té Hatsu",
+     "categoria": "bebida fría",
+     "precio_min": 7000,
+     "precio_max": 7000,
+     "vegetariano": "si"
+    },
+    {
+     "id": "mc_cocacola",
+     "nombre": "Coca-Cola",
+     "categoria": "bebida fría",
+     "precio_min": 5000,
+     "precio_max": 5000,
+     "vegetariano": "si"
+    },
+    {
+     "id": "mc_bebidas_frias",
+     "nombre": "Bebidas frías con y sin café",
+     "categoria": "bebida fría",
+     "precio_min": null,
+     "precio_max": null,
+     "vegetariano": "por_confirmar",
+     "nota": "Listado y precios no registrados; ligeramente más caras que las calientes."
+    },
+    {
+     "id": "mc_bebidas_calientes",
+     "nombre": "Bebidas calientes con y sin café",
+     "categoria": "bebida caliente",
+     "precio_min": 4500,
+     "precio_max": 8900,
+     "vegetariano": "por_confirmar",
+     "nota": "Ej.: chocolate en agua desde $4.500, capuchino chai $8.900. Listado completo no registrado."
+    },
+    {
+     "id": "mc_sand_cordero",
+     "nombre": "Sándwich de cordero",
+     "categoria": "sándwich",
+     "precio_min": 7000,
+     "precio_max": 11500,
+     "vegetariano": "no",
+     "nota": "Precio según tipo de sándwich."
+    },
+    {
+     "id": "mc_sand_pollo",
+     "nombre": "Sándwich de pollo",
+     "categoria": "sándwich",
+     "precio_min": 7000,
+     "precio_max": 11500,
+     "vegetariano": "no",
+     "nota": "Precio según tipo de sándwich."
+    },
+    {
+     "id": "mc_sand_atun",
+     "nombre": "Sándwich de atún",
+     "categoria": "sándwich",
+     "precio_min": 7000,
+     "precio_max": 11500,
+     "vegetariano": "no",
+     "nota": "Precio según tipo de sándwich."
+    },
+    {
+     "id": "mc_tortilla_jyq",
+     "nombre": "Tortilla de jamón y queso",
+     "categoria": "comida rápida",
+     "precio_min": 11000,
+     "precio_max": 11000,
+     "vegetariano": "no"
+    },
+    {
+     "id": "mc_tortilla_frutos",
+     "nombre": "Tortilla de frutos rojos y queso",
+     "categoria": "comida rápida",
+     "precio_min": 11000,
+     "precio_max": 11000,
+     "vegetariano": "si"
+    },
+    {
+     "id": "mc_tortilla_pollo",
+     "nombre": "Tortilla de pollo y champiñones",
+     "categoria": "comida rápida",
+     "precio_min": 12000,
+     "precio_max": 12000,
+     "vegetariano": "no"
+    },
+    {
+     "id": "mc_croissant_jyq",
+     "nombre": "Croissant de jamón y queso",
+     "categoria": "panadería",
+     "precio_min": 7500,
+     "precio_max": 7500,
+     "vegetariano": "no"
+    },
+    {
+     "id": "mc_croissant_choco",
+     "nombre": "Croissant de chocolate",
+     "categoria": "panadería",
+     "precio_min": 7500,
+     "precio_max": 7500,
+     "vegetariano": "si"
+    },
+    {
+     "id": "mc_croissant_frutos",
+     "nombre": "Croissant de frutos rojos y queso",
+     "categoria": "panadería",
+     "precio_min": 7500,
+     "precio_max": 7500,
+     "vegetariano": "si"
+    },
+    {
+     "id": "mc_croissant_arequipe",
+     "nombre": "Croissant de arequipe y queso",
+     "categoria": "panadería",
+     "precio_min": 7500,
+     "precio_max": 7500,
+     "vegetariano": "si"
+    },
+    {
+     "id": "mc_torta_zanahoria",
+     "nombre": "Torta de zanahoria",
+     "categoria": "postre",
+     "precio_min": 7000,
+     "precio_max": 7000,
+     "vegetariano": "si"
+    },
+    {
+     "id": "mc_empanada",
+     "nombre": "Empanada tradicional",
+     "categoria": "comida rápida",
+     "precio_min": 2900,
+     "precio_max": 2900,
+     "vegetariano": "por_confirmar",
+     "nota": "Relleno no registrado."
+    },
+    {
+     "id": "mc_almojabana",
+     "nombre": "Almojábana",
+     "categoria": "panadería",
+     "precio_min": 2900,
+     "precio_max": 2900,
+     "vegetariano": "si"
+    },
+    {
+     "id": "mc_pan_yuca",
+     "nombre": "Pan de yuca",
+     "categoria": "panadería",
+     "precio_min": 2900,
+     "precio_max": 2900,
+     "vegetariano": "si"
+    },
+    {
+     "id": "mc_galleta_nuez",
+     "nombre": "Galletas de nuez",
+     "categoria": "snack",
+     "precio_min": 4500,
+     "precio_max": 4500,
+     "vegetariano": "si"
+    },
+    {
+     "id": "mc_galleta_avena",
+     "nombre": "Galleta de avena",
+     "categoria": "snack",
+     "precio_min": 4500,
+     "precio_max": 4500,
+     "vegetariano": "si"
+    },
+    {
+     "id": "mc_galleta_tosh",
+     "nombre": "Galletas Tosh",
+     "categoria": "snack",
+     "precio_min": 1800,
+     "precio_max": 1800,
+     "vegetariano": "si"
+    },
+    {
+     "id": "mc_brownie",
+     "nombre": "Brownie con helado",
+     "categoria": "postre",
+     "precio_min": 11500,
+     "precio_max": 11500,
+     "vegetariano": "si"
+    },
+    {
+     "id": "mc_copa_helado",
+     "nombre": "Copa de helado con frutos rojos",
+     "categoria": "postre",
+     "precio_min": 6900,
+     "precio_max": 6900,
+     "vegetariano": "si"
+    },
+    {
+     "id": "mc_oreo",
+     "nombre": "Galletas Oreo",
+     "categoria": "snack",
+     "precio_min": 1600,
+     "precio_max": 1600,
+     "vegetariano": "si"
+    }
+   ]
+  },
+  {
+   "id": "melo_caramelo",
+   "nombre": "Melo Caramelo",
+   "marca": null,
+   "tipo": "puesto de postres y bebidas",
+   "ubicacion": "Frente a la biblioteca",
+   "zona": "Biblioteca",
+   "referencias": [
+    "biblioteca"
+   ],
+   "horario": null,
+   "afluencia": {
+    "nivel": "baja",
+    "nota": "Pocos puestos para sentarse; no suele estar ocupado."
+   },
+   "descripcion": "Frutas con crema, fresas con chocolate, sodas, granizados y mini pancakes.",
+   "advertencia_vegetariana": "Confirmar ingredientes de cremas, chocolates, gomitas, marshmallows y toppings para vegetarianos estrictos.",
+   "productos": [
+    {
+     "id": "mm_chamoy",
+     "nombre": "Chamoy Lovers (fruta picada con limón, sal, Tajín y chamoy)",
+     "categoria": "fruta",
+     "precio_min": 6000,
+     "precio_max": 6000,
+     "vegetariano": "si",
+     "opciones": [
+      "mango",
+      "sandía",
+      "piña"
+     ]
+    },
+    {
+     "id": "mm_banana_classic",
+     "nombre": "Banana y fresas con crema - Classic",
+     "categoria": "postre",
+     "precio_min": 11000,
+     "precio_max": 11000,
+     "vegetariano": "si"
+    },
+    {
+     "id": "mm_banana_melas",
+     "nombre": "Banana y fresas con crema - Melas (más fruta, crema y topping de chocolate)",
+     "categoria": "postre",
+     "precio_min": 13000,
+     "precio_max": 13000,
+     "vegetariano": "si"
+    },
+    {
+     "id": "mm_fresas_crema_classic",
+     "nombre": "Fresas con crema - Classic",
+     "categoria": "postre",
+     "precio_min": 11000,
+     "precio_max": 11000,
+     "vegetariano": "si"
+    },
+    {
+     "id": "mm_fresas_crema_melas",
+     "nombre": "Fresas con crema - Melas (más fresas, crema y topping de chocolate)",
+     "categoria": "postre",
+     "precio_min": 13000,
+     "precio_max": 13000,
+     "vegetariano": "si"
+    },
+    {
+     "id": "mm_fresas_choco_classic",
+     "nombre": "Fresas con chocolate - Classic (chocolate semiamargo)",
+     "categoria": "postre",
+     "precio_min": 11000,
+     "precio_max": 11000,
+     "vegetariano": "si"
+    },
+    {
+     "id": "mm_fresas_choco_melas",
+     "nombre": "Fresas con chocolate - Melas (más fresas, chocolate a elección)",
+     "categoria": "postre",
+     "precio_min": 13000,
+     "precio_max": 13000,
+     "vegetariano": "si"
+    },
+    {
+     "id": "mm_mangonada",
+     "nombre": "Mangonada (mango granizado con limón, chamoy y Tajín)",
+     "categoria": "bebida fría",
+     "precio_min": 8000,
+     "precio_max": 8000,
+     "vegetariano": "si"
+    },
+    {
+     "id": "mm_soditas",
+     "nombre": "Sodita (fruta, syrup, perlas explosivas, limón y soda)",
+     "categoria": "bebida fría",
+     "precio_min": 10000,
+     "precio_max": 10000,
+     "vegetariano": "si",
+     "opciones": [
+      "blueberry",
+      "maracumango",
+      "cereza",
+      "fresa",
+      "maracuyá",
+      "sandía",
+      "frutos rojos"
+     ]
+    },
+    {
+     "id": "mm_granizados",
+     "nombre": "Granizado de fruta natural",
+     "categoria": "bebida fría",
+     "precio_min": 8000,
+     "precio_max": 8000,
+     "vegetariano": "si",
+     "opciones": [
+      "fresa",
+      "maracuyá",
+      "mango",
+      "sandía",
+      "maracumango"
+     ]
+    },
+    {
+     "id": "mm_mini_classic",
+     "nombre": "Mini pancakes - Mini Classic (con fruta, chocolate y 1 topping)",
+     "categoria": "postre",
+     "precio_min": 10000,
+     "precio_max": 10000,
+     "vegetariano": "si"
+    },
+    {
+     "id": "mm_mini_melo",
+     "nombre": "Mini pancakes - Mini Melo (más pancakes y 2 toppings)",
+     "categoria": "postre",
+     "precio_min": 12000,
+     "precio_max": 12000,
+     "vegetariano": "si"
+    },
+    {
+     "id": "mm_extra_topping",
+     "nombre": "Extra topping (chips de chocolate, gomitas, leche condensada, M&M's, marshmallows, miel, Nanos, Oreo, Quipitos, Sparkies)",
+     "categoria": "adicional",
+     "precio_min": 1500,
+     "precio_max": 1500,
+     "vegetariano": "por_confirmar"
+    },
+    {
+     "id": "mm_extra_choco",
+     "nombre": "Extra chocolate (blanco o negro)",
+     "categoria": "adicional",
+     "precio_min": 2000,
+     "precio_max": 2000,
+     "vegetariano": "por_confirmar"
+    },
+    {
+     "id": "mm_topping_premium",
+     "nombre": "Topping premium (crema dulce)",
+     "categoria": "adicional",
+     "precio_min": 3000,
+     "precio_max": 3000,
+     "vegetariano": "por_confirmar"
+    }
+   ]
+  }
+ ]
+}

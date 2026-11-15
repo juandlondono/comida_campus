@@ -1,0 +1,115 @@
+{
+ "metadatos": {
+  "organizacion": {
+   "id": "demo_torre",
+   "nombre": "Torre Empresarial Demo (datos ficticios)",
+   "ciudad": "Ejemplo"
+  },
+  "descripcion": "Organización FICTICIA para demostrar que el producto sirve en cualquier lugar. No son datos reales.",
+  "fecha_consulta": "2026-11-15",
+  "moneda": "COP",
+  "hora_pico_almuerzo": [
+   "12:00",
+   "14:00"
+  ]
+ },
+ "catalogos": {},
+ "establecimientos": [
+  {
+   "id": "demo_food_court",
+   "nombre": "Plazoleta de comidas Piso 1",
+   "marca": null,
+   "tipo": "plazoleta",
+   "ubicacion": "Piso 1, junto a recepción",
+   "zona": "Piso 1",
+   "referencias": [
+    "piso 1",
+    "recepcion",
+    "lobby"
+   ],
+   "horario": null,
+   "afluencia": {
+    "nivel": "alta",
+    "cuando": "hora de almuerzo",
+    "nota": "Muy llena entre 12:00 y 14:00."
+   },
+   "productos": [
+    {
+     "id": "dm_ejecutivo",
+     "nombre": "Almuerzo ejecutivo",
+     "categoria": "almuerzo",
+     "precio_min": 18000,
+     "precio_max": 18000,
+     "vegetariano": "no"
+    },
+    {
+     "id": "dm_bowl",
+     "nombre": "Bowl de garbanzos y vegetales",
+     "categoria": "almuerzo",
+     "precio_min": 16000,
+     "precio_max": 16000,
+     "vegetariano": "si"
+    },
+    {
+     "id": "dm_wrap",
+     "nombre": "Wrap de pollo",
+     "categoria": "sándwich",
+     "precio_min": 12000,
+     "precio_max": 12000,
+     "vegetariano": "no"
+    },
+    {
+     "id": "dm_jugo",
+     "nombre": "Jugo natural",
+     "categoria": "bebida fría",
+     "precio_min": 5000,
+     "precio_max": 5000,
+     "vegetariano": "si"
+    }
+   ]
+  },
+  {
+   "id": "demo_cafe_p8",
+   "nombre": "Café Piso 8",
+   "marca": null,
+   "tipo": "cafetería",
+   "ubicacion": "Piso 8, zona de coworking",
+   "zona": "Piso 8",
+   "referencias": [
+    "piso 8",
+    "coworking"
+   ],
+   "horario": null,
+   "afluencia": {
+    "nivel": "baja",
+    "nota": "Casi nunca hay fila."
+   },
+   "productos": [
+    {
+     "id": "dm_capuchino",
+     "nombre": "Capuchino",
+     "categoria": "bebida caliente",
+     "precio_min": 6000,
+     "precio_max": 6000,
+     "vegetariano": "si"
+    },
+    {
+     "id": "dm_croissant",
+     "nombre": "Croissant de almendras",
+     "categoria": "panadería",
+     "precio_min": 7000,
+     "precio_max": 7000,
+     "vegetariano": "si"
+    },
+    {
+     "id": "dm_sandwich",
+     "nombre": "Sándwich de pavo",
+     "categoria": "sándwich",
+     "precio_min": 11000,
+     "precio_max": 11000,
+     "vegetariano": "no"
+    }
+   ]
+  }
+ ]
+}

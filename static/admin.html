@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Panel de vendedores · Comida Campus</title>
+<style>
+  :root { --fondo:#f6f4ef; --tarjeta:#fff; --texto:#1f2421; --suave:#6b716d; --acento:#1d6b4f; --borde:#e3e0d8; --error:#a33; }
+  * { box-sizing: border-box; }
+  body { margin:0; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; background:var(--fondo); color:var(--texto); }
+  header { padding:14px 20px; border-bottom:1px solid var(--borde); background:var(--tarjeta); display:flex; align-items:center; gap:14px; flex-wrap:wrap; }
+  header h1 { font-size:17px; margin:0; }
+  header .org { color:var(--suave); font-size:13px; }
+  header a { margin-left:auto; color:var(--acento); font-size:13px; }
+  main { max-width:1080px; margin:0 auto; padding:16px 20px 40px; }
+  .filtros { display:flex; gap:10px; margin-bottom:12px; flex-wrap:wrap; }
+  .filtros input, .filtros select { padding:8px 10px; border:1px solid var(--borde); border-radius:6px; font-size:14px; background:#fff; }
+  .filtros input { flex:1; min-width:200px; }
+  table { width:100%; border-collapse:collapse; background:var(--tarjeta); border:1px solid var(--borde); border-radius:8px; overflow:hidden; font-size:14px; }
+  th, td { padding:8px 10px; border-bottom:1px solid var(--borde); text-align:left; vertical-align:middle; }
+  th { background:#efece5; font-weight:600; font-size:12px; text-transform:uppercase; letter-spacing:.03em; color:var(--suave); }
+  td.num input { width:90px; padding:5px 6px; border:1px solid var(--borde); border-radius:5px; font-size:14px; text-align:right; }
+  td .lugar { color:var(--suave); font-size:12px; }
+  tr.agotado td:not(.acciones) { opacity:.55; }
+  button { background:var(--acento); color:#fff; border:none; border-radius:6px; padding:6px 12px; cursor:pointer; font-size:13px; }
+  button:disabled { opacity:.4; cursor:default; }
+  .estado { font-size:12px; margin-left:6px; }
+  .ok { color:var(--acento); } .mal { color:var(--error); }
+  .nota { color:var(--suave); font-size:13px; margin:0 0 12px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>🧾 Panel de vendedores</h1>
+  <span class="org" id="org">cargando…</span>
+  <a href="/" target="_blank">Abrir el chatbot</a>
+</header>
+<main>
+  <p class="nota">Los cambios se guardan en la base de datos y el chatbot los usa en la siguiente pregunta. Precios en pesos; deja "máx." vacío si el precio es "desde".</p>
+  <div class="filtros">
+    <input id="buscar" placeholder="Buscar producto…">
+    <select id="lugar"><option value="">Todos los establecimientos</option></select>
+  </div>
+  <table>
+    <thead><tr><th>Producto</th><th>Categoría</th><th>Precio mín.</th><th>Precio máx.</th><th>Disponible hoy</th><th></th></tr></thead>
+    <tbody id="filas"></tbody>
+  </table>
+</main>
+<script>
+let productos = [];
+const filas = document.getElementById('filas'), buscar = document.getElementById('buscar'), lugar = document.getElementById('lugar');
+const norm = t => (t || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+
+function pintar() {
+  const q = norm(buscar.value), l = lugar.value;
+  filas.innerHTML = '';
+  productos.filter(p => (!q || norm(p.nombre).includes(q)) && (!l || p.lugar === l)).forEach(p => {
+    const tr = document.createElement('tr');
+    if (!p.disponible) tr.className = 'agotado';
+    tr.innerHTML = `<td></td><td></td>
+      <td class="num"><input type="number" min="0" step="100" class="pmin"></td>
+      <td class="num"><input type="number" min="0" step="100" class="pmax"></td>
+      <td><input type="checkbox" class="disp"></td>
+      <td class="acciones"><button disabled>Guardar</button><span class="estado"></span></td>`;
+    const [cNombre, cCat] = tr.querySelectorAll('td');
+    cNombre.textContent = p.nombre;
+    const sub = document.createElement('div'); sub.className = 'lugar'; sub.textContent = p.lugar; cNombre.appendChild(sub);
+    cCat.textContent = p.categoria;
+    const pmin = tr.querySelector('.pmin'), pmax = tr.querySelector('.pmax'), disp = tr.querySelector('.disp');
+    const btn = tr.querySelector('button'), estado = tr.querySelector('.estado');
+    pmin.value = p.precio_min ?? ''; pmax.value = p.precio_max ?? ''; disp.checked = !!p.disponible;
+    [pmin, pmax, disp].forEach(el => el.addEventListener('input', () => { btn.disabled = false; estado.textContent = ''; }));
+    btn.onclick = async () => {
+      btn.disabled = true; estado.textContent = 'guardando…'; estado.className = 'estado';
+      const r = await fetch('/api/admin/producto', {method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({id: p.id, precio_min: pmin.value, precio_max: pmax.value, disponible: disp.checked})});
+      const d = await r.json();
+      if (r.ok) {
+        Object.assign(p, {precio_min: pmin.value === '' ? null : +pmin.value, precio_max: pmax.value === '' ? null : +pmax.value, disponible: disp.checked ? 1 : 0});
+        tr.className = disp.checked ? '' : 'agotado';
+        estado.textContent = '✓ guardado'; estado.className = 'estado ok';
+      } else { estado.textContent = d.error || 'error'; estado.className = 'estado mal'; btn.disabled = false; }
+    };
+    filas.appendChild(tr);
+  });
+}
+
+fetch('/api/admin/productos').then(r => r.json()).then(d => {
+  document.getElementById('org').textContent = d.organizacion;
+  productos = d.productos;
+  [...new Set(productos.map(p => p.lugar))].forEach(n => { const o = document.createElement('option'); o.value = o.textContent = n; lugar.appendChild(o); });
+  pintar();
+});
+buscar.oninput = pintar; lugar.onchange = pintar;
+</script>
+</body>
+</html>

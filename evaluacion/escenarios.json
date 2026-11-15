@@ -1,0 +1,87 @@
+[
+  {
+    "id": "E1", "tipo": "compuesta",
+    "pregunta": "Tengo 10.000 pesos y 15 minutos, estoy en Ingeniería y me gustaría una opción vegetariana. ¿Qué puedo comer?",
+    "herramientas_aceptadas": {
+      "buscar_opciones": {"presupuesto_max": 10000, "vegetariano": true, "zona_usuario": "Ingeniería", "tiempo_max_min": 15}
+    }
+  },
+  {
+    "id": "E2", "tipo": "presupuesto",
+    "pregunta": "¿Qué puedo comprar con $5.000?",
+    "herramientas_aceptadas": {"buscar_opciones": {"presupuesto_max": 5000}}
+  },
+  {
+    "id": "E3", "tipo": "vegetariano",
+    "pregunta": "¿Qué opciones vegetarianas hay en la universidad?",
+    "herramientas_aceptadas": {"buscar_opciones": {"vegetariano": true}}
+  },
+  {
+    "id": "E4", "tipo": "categoria_y_horario",
+    "pregunta": "¿Dónde puedo comprar un desayuno?",
+    "herramientas_aceptadas": {"buscar_opciones": {"categoria": "desayuno"}}
+  },
+  {
+    "id": "E5", "tipo": "presupuesto",
+    "pregunta": "¿Qué puedo comer por menos de $10.000?",
+    "herramientas_aceptadas": {"buscar_opciones": {"presupuesto_max": 10000}}
+  },
+  {
+    "id": "E6", "tipo": "producto_en_establecimiento",
+    "pregunta": "¿Cuánto cuesta un sándwich en Latte?",
+    "herramientas_aceptadas": {
+      "buscar_opciones": {"texto": "sandwich", "establecimiento": "latte"},
+      "get_menu": {"cafeteria_id": "latte"},
+      "get_availability": {"cafeteria_id": "latte", "producto": "sandwich"}
+    }
+  },
+  {
+    "id": "E7", "tipo": "categoria_en_establecimiento",
+    "pregunta": "¿Qué bebidas frías hay en María Café?",
+    "herramientas_aceptadas": {
+      "buscar_opciones": {"categoria": "bebida fria", "establecimiento": "maria"},
+      "get_menu": {"cafeteria_id": "maria"}
+    }
+  },
+  {
+    "id": "E8", "tipo": "donde_venden",
+    "pregunta": "¿Dónde puedo comprar fresas con chocolate?",
+    "herramientas_aceptadas": {"buscar_opciones": {"texto": "fresas con chocolate"}}
+  },
+  {
+    "id": "E9", "tipo": "zona",
+    "pregunta": "¿Qué opciones de comida hay en el Patio de Banderas?",
+    "herramientas_aceptadas": {
+      "buscar_opciones": {"zona_usuario": "patio de banderas"},
+      "get_cafeterias": {"zona": "patio de banderas"},
+      "get_menu": {"cafeteria_id": "maria"}
+    }
+  },
+  {
+    "id": "E10", "tipo": "compuesta",
+    "pregunta": "¿Qué puedo comprar si tengo $15.000 y soy vegetariano?",
+    "herramientas_aceptadas": {"buscar_opciones": {"presupuesto_max": 15000, "vegetariano": true}}
+  },
+  {
+    "id": "E11", "tipo": "categoria_y_horario",
+    "pregunta": "¿En qué cafetería puedo comprar un almuerzo?",
+    "herramientas_aceptadas": {"buscar_opciones": {"categoria": "almuerzo"}}
+  },
+  {
+    "id": "E12", "tipo": "compuesta_afluencia",
+    "pregunta": "Estoy en el bloque 4, tengo 10 minutos y 8 mil pesos, ¿qué como?",
+    "herramientas_aceptadas": {"buscar_opciones": {"presupuesto_max": 8000, "tiempo_max_min": 10, "zona_usuario": "bloque 4"}}
+  },
+  {
+    "id": "E13", "tipo": "informacion_ausente",
+    "pregunta": "¿Venden sushi en la universidad?",
+    "herramientas_aceptadas": {"buscar_opciones": {"texto": "sushi"}, "get_availability": {"producto": "sushi"}},
+    "nota": "Éxito = el agente consulta y responde que no aparece en el inventario, sin inventar."
+  },
+  {
+    "id": "E14", "tipo": "informacion_ausente",
+    "pregunta": "¿A qué hora abre María Café?",
+    "herramientas_aceptadas": {"get_opening_hours": {"cafeteria_id": "maria"}},
+    "nota": "Éxito = responde que el horario aún no está registrado, sin inventarlo."
+  }
+]
