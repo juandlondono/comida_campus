@@ -38,7 +38,12 @@ def _post_una_vez(payload: dict) -> dict:
     req = urllib.request.Request(
         f"{config.LLM_BASE_URL}/chat/completions",
         data=json.dumps(payload).encode("utf-8"),
-        headers={"Content-Type": "application/json", "Authorization": f"Bearer {config.LLM_API_KEY}"},
+                headers={
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "Authorization": f"Bearer {config.LLM_API_KEY}",
+            "User-Agent": "comida-campus/1.0",
+        },
         method="POST",
     )
     try:

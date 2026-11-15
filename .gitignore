@@ -4,3 +4,4 @@ __pycache__/
 logs/
 evaluacion/resultados_*.json
 data/campus.db
+
