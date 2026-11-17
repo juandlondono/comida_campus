@@ -79,3 +79,30 @@ CREATE VIRTUAL TABLE IF NOT EXISTS productos_fts USING fts5(
     texto,
     tokenize = 'unicode61 remove_diacritics 2'
 );
+
+-- ---------------------------------------------------------------- control de accesos
+-- Usuarios del panel de vendedores. Las contraseñas NUNCA se guardan: solo su hash PBKDF2 + sal.
+CREATE TABLE IF NOT EXISTS usuarios (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    usuario     TEXT NOT NULL UNIQUE,
+    nombre      TEXT NOT NULL,
+    hash        TEXT NOT NULL,
+    sal         TEXT NOT NULL,
+    rol         TEXT NOT NULL CHECK (rol IN ('admin', 'vendedor')),
+    activo      INTEGER NOT NULL DEFAULT 1,
+    creado      TEXT NOT NULL
+);
+
+-- Qué establecimientos puede editar cada vendedor (el admin puede todo)
+CREATE TABLE IF NOT EXISTS usuario_establecimientos (
+    usuario_id          INTEGER NOT NULL REFERENCES usuarios(id) ON DELETE CASCADE,
+    establecimiento_id  TEXT NOT NULL REFERENCES establecimientos(id),
+    PRIMARY KEY (usuario_id, establecimiento_id)
+);
+
+-- Sesiones abiertas: solo se guarda el hash del token de la cookie
+CREATE TABLE IF NOT EXISTS sesiones (
+    token_hash  TEXT PRIMARY KEY,
+    usuario_id  INTEGER NOT NULL REFERENCES usuarios(id) ON DELETE CASCADE,
+    expira      TEXT NOT NULL
+);

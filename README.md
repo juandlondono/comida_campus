@@ -29,6 +29,20 @@ pasar a PostgreSQL o MySQL implica reescribir ese archivo, no el agente ni el se
 - Para volver a crear la base desde las semillas (borra los cambios del panel): `python servidor_mcp/repositorio.py`.
 - Los vendedores editan precios y disponibilidad en `http://localhost:8000/admin`; el chatbot usa los cambios en la siguiente pregunta.
 
+## Control de accesos (panel de vendedores)
+
+- **La primera vez** que se abre `/admin`, la plataforma pide crear la cuenta de **administrador**.
+- El administrador crea usuarios en la pestaña **Usuarios** con uno de dos roles:
+  - `admin`: ve y edita todas las organizaciones y administra usuarios.
+  - `vendedor`: solo ve y edita los productos de los establecimientos que tiene asignados. El menú compartido
+    de una marca (p. ej. el común de las 5 sedes Latte) solo lo edita quien tenga asignadas todas sus sedes.
+- Seguridad: contraseñas guardadas solo como hash PBKDF2-SHA256 con sal; sesión en cookie `HttpOnly` y
+  `SameSite=Strict` que vence en 8 horas; los permisos se verifican en el servidor; 5 intentos fallidos
+  bloquean el usuario 5 minutos; las peticiones de cambio solo aceptan JSON (protección CSRF).
+  El chatbot sigue siendo de solo lectura: nunca modifica la base de datos.
+- ¿Olvidaste una contraseña? `python servidor_mcp/repositorio.py clave <usuario>`
+- En producción: servir con HTTPS y agregar el atributo `Secure` a la cookie.
+
 ## Instalación (Windows, macOS o Linux, Python 3.10+)
 
 ```bash
