@@ -25,7 +25,7 @@ Tablas: `organizaciones`, `zonas`, `catalogos`, `establecimientos`, `productos` 
 (índice invertido de texto completo que ignora tildes). Solo `repositorio.py` toca la base de datos:
 pasar a PostgreSQL o MySQL implica reescribir ese archivo, no el agente ni el servidor.
 
-- Para elegir la organización: `CAMPUS_ORG=unibague` o `CAMPUS_ORG=demo_torre` en `.env`.
+- Para elegir la organización: el selector 📍 del chat y del panel (sin reiniciar), o `CAMPUS_ORG` en `.env` para la de inicio.
 - Para volver a crear la base desde las semillas (borra los cambios del panel): `python servidor_mcp/repositorio.py`.
 - Los vendedores editan precios y disponibilidad en `http://localhost:8000/admin`; el chatbot usa los cambios en la siguiente pregunta.
 

@@ -138,7 +138,8 @@ class AgenteComida:
             r = await agente.responder("tengo 10 mil y 15 minutos...")
     """
 
-    def __init__(self, usar_herramientas: bool = True, guardar_log: bool = True):
+    def __init__(self, usar_herramientas: bool = True, guardar_log: bool = True, organizacion: str | None = None):
+        self.organizacion = organizacion  # None = la de CAMPUS_ORG
         self.usar_herramientas = usar_herramientas
         self.guardar_log = guardar_log
         self.id_sesion = uuid.uuid4().hex[:8]
@@ -152,7 +153,8 @@ class AgenteComida:
     # ----------------------------------------------------------- ciclo de vida
     async def __aenter__(self) -> "AgenteComida":
         params = StdioServerParameters(
-            command=sys.executable, args=[str(config.SERVIDOR_MCP)], env=dict(os.environ)
+            command=sys.executable, args=[str(config.SERVIDOR_MCP)],
+            env={**os.environ, **({"CAMPUS_ORG": self.organizacion} if self.organizacion else {})}
         )
         leer, escribir = await self._pila.enter_async_context(stdio_client(params))
         self._sesion = await self._pila.enter_async_context(ClientSession(leer, escribir))
