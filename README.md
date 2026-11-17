@@ -40,6 +40,9 @@ pasar a PostgreSQL o MySQL implica reescribir ese archivo, no el agente ni el se
   `SameSite=Strict` que vence en 8 horas; los permisos se verifican en el servidor; 5 intentos fallidos
   bloquean el usuario 5 minutos; las peticiones de cambio solo aceptan JSON (protección CSRF).
   El chatbot sigue siendo de solo lectura: nunca modifica la base de datos.
+- Los vendedores pueden **agregar, editar y eliminar** productos (nombre, categoría, precio fijo o rango,
+  vegetariano, hora límite, nota y disponibilidad) en sus establecimientos; el índice de búsqueda se
+  actualiza al instante, así que el chatbot los recomienda desde la siguiente pregunta.
 - ¿Olvidaste una contraseña? `python servidor_mcp/repositorio.py clave <usuario>`
 - En producción: servir con HTTPS y agregar el atributo `Secure` a la cookie.
 

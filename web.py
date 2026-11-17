@@ -26,7 +26,7 @@ from agente import AgenteComida
 from agente import config
 
 sys.path.insert(0, str(Path(__file__).resolve().parent / "servidor_mcp"))
-from repositorio import Cuentas, Repositorio, listar_organizaciones  # noqa: E402  (panel de vendedores)
+from repositorio import CATEGORIAS, Cuentas, Repositorio, listar_organizaciones  # noqa: E402
 
 STATIC = Path(__file__).resolve().parent / "static"
 HTML = STATIC / "index.html"
@@ -158,8 +158,10 @@ def crear_manejador(puente: Puente, modo: str):
                     orgs = listar_organizaciones()
                     if usuario["rol"] != "admin":
                         orgs = [o for o in orgs if o["id"] in usuario["organizaciones"]]
+                    destinos = [d for d in repo.destinos() if cuentas.puede_editar(usuario, d)]
                     return self._json({"org": org, "organizacion": repo.organizacion()["nombre"],
-                                       "organizaciones": orgs, "productos": productos})
+                                       "organizaciones": orgs, "productos": productos,
+                                       "destinos": destinos, "categorias": CATEGORIAS})
                 if usuario["rol"] != "admin":
                     return self._json({"error": "Solo un administrador puede hacer esto."}, 403)
                 if url.path == "/api/admin/usuarios":
@@ -223,6 +225,20 @@ def crear_manejador(puente: Puente, modo: str):
                         return self._json(Repositorio(organizacion=org).actualizar_producto(
                             producto["id"], datos.get("precio_min"), datos.get("precio_max"),
                             bool(datos.get("disponible"))))
+                    if self.path == "/api/admin/producto/crear":
+                        destino = datos.get("destino") or {}
+                        clave = "catalogo_id" if destino.get("tipo") == "catalogo" else "establecimiento_id"
+                        if not cuentas.puede_editar(usuario, {clave: destino.get("id")}):
+                            return self._json({"error": "No puedes agregar productos en ese lugar."}, 403)
+                        return self._json(Repositorio(organizacion=org).crear_producto(destino, datos))
+                    if self.path in ("/api/admin/producto/editar", "/api/admin/producto/eliminar"):
+                        producto = cuentas.producto(datos.get("id"))
+                        if not producto or not cuentas.puede_editar(usuario, producto):
+                            return self._json({"error": "No tienes permiso para modificar este producto."}, 403)
+                        repo = Repositorio(organizacion=org)
+                        if self.path.endswith("editar"):
+                            return self._json(repo.editar_producto(producto["id"], datos))
+                        return self._json(repo.eliminar_producto(producto["id"]))
                     if usuario["rol"] != "admin":
                         return self._json({"error": "Solo un administrador puede hacer esto."}, 403)
                     if self.path == "/api/admin/usuarios":

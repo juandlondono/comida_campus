@@ -57,6 +57,19 @@
   .lista-ests .org { font-size:11.5px; color:var(--tenue); text-transform:uppercase; margin-top:8px; letter-spacing:.03em; }
   .chip { display:inline-block; font-size:12px; background:#f1eee6; border-radius:999px; padding:2px 8px; margin:2px 4px 2px 0; }
   .inactivo td { opacity:.5; }
+  .acciones { white-space:nowrap; }
+  .acciones .accion { margin-right:4px; }
+  .peligro { background:#fff; color:var(--error); border:1px solid #e8c9c9; }
+  .peligro.confirmar { background:var(--error); color:#fff; border-color:var(--error); }
+  .agregar { background:var(--acento); color:#fff; border:none; border-radius:10px; padding:9px 14px; font-weight:600; cursor:pointer; }
+  dialog { border:none; border-radius:16px; padding:0; width:min(520px, 94vw); box-shadow:0 20px 60px rgba(0,0,0,.25); }
+  dialog::backdrop { background:rgba(29,36,32,.35); }
+  dialog form { padding:22px; }
+  dialog h2 { margin:0 0 4px; font-size:18px; }
+  .dos { display:grid; grid-template-columns:1fr 1fr; gap:0 12px; }
+  .botones { display:flex; gap:10px; justify-content:flex-end; margin-top:18px; }
+  .botones .principal { width:auto; margin:0; padding:10px 18px; }
+  .ayuda { font-size:12px; color:var(--tenue); margin-top:4px; }
   @media (max-width:820px) { .rejilla { grid-template-columns:1fr; } }
 </style>
 </head>
@@ -112,6 +125,7 @@
       <select class="campo" id="selorg"></select>
       <input class="campo" id="buscar" placeholder="Buscar producto…">
       <select class="campo" id="lugar"><option value="">Todos mis establecimientos</option></select>
+      <button class="agregar" id="btn-agregar" type="button">+ Agregar producto</button>
     </div>
     <table>
       <thead><tr><th>Producto</th><th>Categoría</th><th>Precio mín.</th><th>Precio máx.</th><th>Disponible hoy</th><th></th></tr></thead>
@@ -150,10 +164,44 @@
   </main>
 </section>
 
+<dialog id="dlg">
+  <form id="f-producto" method="dialog">
+    <h2 id="dlg-titulo">Agregar producto</h2>
+    <p class="nota" id="dlg-sub">El chatbot lo podrá recomendar desde la siguiente pregunta.</p>
+    <div id="bloque-destino">
+      <label>¿Dónde se vende?</label>
+      <select class="campo" name="destino" id="sel-destino"></select>
+    </div>
+    <label>Nombre del producto</label><input class="campo" name="nombre" maxlength="120" required>
+    <div class="dos">
+      <div><label>Categoría</label><select class="campo" name="categoria" id="sel-categoria" required></select></div>
+      <div><label>¿Es vegetariano?</label>
+        <select class="campo" name="vegetariano">
+          <option value="si">Sí</option><option value="no">No</option><option value="por_confirmar">Por confirmar</option>
+        </select></div>
+    </div>
+    <div class="dos">
+      <div><label>Precio mínimo ($)</label><input class="campo" name="precio_min" type="number" min="0" step="100"></div>
+      <div><label>Precio máximo ($)</label><input class="campo" name="precio_max" type="number" min="0" step="100"></div>
+    </div>
+    <div class="ayuda">Precio fijo: escribe el mismo valor en los dos. Si varía, escribe el rango.</div>
+    <div class="dos">
+      <div><label>Se vende solo hasta (opcional)</label><input class="campo" name="disponible_hasta" type="time"></div>
+      <div><label>Disponible hoy</label><label style="font-weight:400;color:var(--texto);display:flex;gap:8px;align-items:center;margin-top:12px"><input type="checkbox" name="disponible" checked> Sí, se puede pedir</label></div>
+    </div>
+    <label>Nota para el cliente (opcional)</label><input class="campo" name="nota" maxlength="200" placeholder="Ej.: incluye bebida, preguntar sabores…">
+    <div class="mensaje mal" id="m-producto"></div>
+    <div class="botones">
+      <button type="button" class="accion gris" id="dlg-cancelar">Cancelar</button>
+      <button class="principal" id="dlg-guardar">Guardar</button>
+    </div>
+  </form>
+</dialog>
+
 <script>
 const $ = s => document.querySelector(s);
 const norm = t => (t || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
-let YO = null, ORG = new URLSearchParams(location.search).get('org') || '', productos = [];
+let YO = null, ORG = new URLSearchParams(location.search).get('org') || '', productos = [], DESTINOS = [], EDITANDO = null;
 
 async function api(ruta, datos) {
   const op = datos === undefined ? {} : {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(datos)};
@@ -205,7 +253,12 @@ document.querySelectorAll('.pestanas button').forEach(b => b.onclick = () => {
 async function cargarInventario() {
   const d = await api('/api/admin/productos?org=' + encodeURIComponent(ORG));
   if (!d.ok) return;
-  ORG = d.org; productos = d.productos;
+  ORG = d.org; productos = d.productos; DESTINOS = d.destinos;
+  $('#btn-agregar').classList.toggle('oculto', DESTINOS.length === 0);
+  const sd = $('#sel-destino'); sd.innerHTML = '';
+  DESTINOS.forEach((x, i) => { const o = document.createElement('option'); o.value = i; o.textContent = x.nombre; sd.appendChild(o); });
+  const sc = $('#sel-categoria'); sc.innerHTML = '';
+  d.categorias.forEach(c => { const o = document.createElement('option'); o.value = o.textContent = c; sc.appendChild(o); });
   const sel = $('#selorg'); sel.innerHTML = '';
   d.organizaciones.forEach(o => { const op = document.createElement('option'); op.value = o.id; op.textContent = '📍 ' + o.nombre; op.selected = o.id === ORG; sel.appendChild(op); });
   sel.classList.toggle('oculto', d.organizaciones.length < 2);
@@ -231,13 +284,26 @@ function pintar() {
       <td class="num"><input type="number" min="0" step="100" class="pmin"></td>
       <td class="num"><input type="number" min="0" step="100" class="pmax"></td>
       <td><input type="checkbox" class="disp"></td>
-      <td class="acciones"><button class="accion" disabled>Guardar</button><span class="estado"></span></td>`;
+      <td class="acciones"><button class="accion guardar" disabled>Guardar</button><button class="accion gris editar">Editar</button><button class="accion peligro eliminar">Eliminar</button><span class="estado"></span></td>`;
     const [cNom, cCat] = tr.querySelectorAll('td');
     cNom.textContent = p.nombre;
     const sub = document.createElement('div'); sub.className = 'sub'; sub.textContent = p.lugar; cNom.appendChild(sub);
     cCat.textContent = p.categoria;
     const pmin = tr.querySelector('.pmin'), pmax = tr.querySelector('.pmax'), disp = tr.querySelector('.disp');
-    const btn = tr.querySelector('button'), est = tr.querySelector('.estado');
+    const btn = tr.querySelector('.guardar'), est = tr.querySelector('.estado');
+    tr.querySelector('.editar').onclick = () => abrirFormulario(p);
+    const borrar = tr.querySelector('.eliminar'); let temporizador = null;
+    borrar.onclick = async () => {
+      if (!borrar.classList.contains('confirmar')) {   // primer clic: pide confirmación
+        borrar.classList.add('confirmar'); borrar.textContent = '¿Seguro? Eliminar';
+        temporizador = setTimeout(() => { borrar.classList.remove('confirmar'); borrar.textContent = 'Eliminar'; }, 4000);
+        return;
+      }
+      clearTimeout(temporizador);
+      const r = await api('/api/admin/producto/eliminar', {org: ORG, id: p.id});
+      if (r.ok) { productos = productos.filter(x => x.id !== p.id); pintar(); }
+      else { est.textContent = r.error; est.className = 'estado mal'; }
+    };
     pmin.value = p.precio_min ?? ''; pmax.value = p.precio_max ?? ''; disp.checked = !!p.disponible;
     [pmin, pmax, disp].forEach(el => el.addEventListener('input', () => { btn.disabled = false; est.textContent = ''; }));
     btn.onclick = async () => {
@@ -252,6 +318,35 @@ function pintar() {
   });
 }
 $('#buscar').oninput = pintar; $('#lugar').onchange = pintar;
+
+function abrirFormulario(p) {
+  EDITANDO = p || null;
+  const f = $('#f-producto'); f.reset(); $('#m-producto').textContent = '';
+  $('#dlg-titulo').textContent = p ? 'Editar producto' : 'Agregar producto';
+  $('#dlg-sub').textContent = p ? p.lugar : 'El chatbot lo podrá recomendar desde la siguiente pregunta.';
+  $('#bloque-destino').classList.toggle('oculto', !!p);
+  if (p) {
+    f.nombre.value = p.nombre; f.categoria.value = p.categoria; f.vegetariano.value = p.vegetariano;
+    f.precio_min.value = p.precio_min ?? ''; f.precio_max.value = p.precio_max ?? '';
+    f.disponible_hasta.value = p.disponible_hasta || ''; f.nota.value = p.nota || ''; f.disponible.checked = !!p.disponible;
+  }
+  $('#dlg').showModal(); f.nombre.focus();
+}
+$('#btn-agregar').onclick = () => abrirFormulario(null);
+$('#dlg-cancelar').onclick = () => $('#dlg').close();
+$('#f-producto').onsubmit = async e => {
+  e.preventDefault();
+  const f = e.target;
+  const datos = {org: ORG, nombre: f.nombre.value, categoria: f.categoria.value, vegetariano: f.vegetariano.value,
+                 precio_min: f.precio_min.value, precio_max: f.precio_max.value,
+                 disponible_hasta: f.disponible_hasta.value, nota: f.nota.value, disponible: f.disponible.checked};
+  if (datos.precio_min && !datos.precio_max) datos.precio_max = '';   // "desde $X"
+  const r = EDITANDO
+    ? await api('/api/admin/producto/editar', {...datos, id: EDITANDO.id})
+    : await api('/api/admin/producto/crear', {...datos, destino: DESTINOS[+f.destino.value]});
+  if (r.ok) { $('#dlg').close(); cargarInventario(); }
+  else { $('#m-producto').textContent = r.error; }
+};
 
 // ---- usuarios (solo admin)
 async function cargarUsuarios() {

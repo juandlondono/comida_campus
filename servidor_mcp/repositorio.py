@@ -30,6 +30,49 @@ ESQUEMA = Path(__file__).resolve().parent / "esquema.sql"
 ORG_POR_DEFECTO = os.getenv("CAMPUS_ORG", "unibague")
 
 
+CATEGORIAS = ["desayuno", "almuerzo", "plato", "sándwich", "comida rápida", "panadería", "snack",
+              "fruta", "postre", "bebida fría", "bebida caliente", "adicional"]
+VALORES_VEGETARIANO = ("si", "no", "por_confirmar")
+
+
+def _validar_producto(d: dict) -> dict:
+    """Valida y normaliza los campos editables de un producto. Lanza ValueError con un mensaje claro."""
+    def entero(v, campo):
+        if v in (None, ""):
+            return None
+        try:
+            n = int(float(v))
+        except (TypeError, ValueError):
+            raise ValueError(f"{campo} debe ser un número.") from None
+        if n < 0:
+            raise ValueError("Los precios no pueden ser negativos.")
+        return n
+
+    nombre = " ".join(str(d.get("nombre") or "").split())
+    if not 2 <= len(nombre) <= 120:
+        raise ValueError("El nombre debe tener entre 2 y 120 caracteres.")
+    categoria = d.get("categoria")
+    if categoria not in CATEGORIAS:
+        raise ValueError("Elige una categoría de la lista.")
+    pmin, pmax = entero(d.get("precio_min"), "El precio mínimo"), entero(d.get("precio_max"), "El precio máximo")
+    if pmin is None and pmax is None:
+        raise ValueError("Escribe al menos un precio (mínimo o máximo).")
+    if pmin is not None and pmax is not None and pmin > pmax:
+        raise ValueError("El precio mínimo no puede ser mayor que el máximo.")
+    veg = d.get("vegetariano") or "por_confirmar"
+    if veg not in VALORES_VEGETARIANO:
+        raise ValueError("Valor de vegetariano inválido.")
+    hasta = (d.get("disponible_hasta") or "").strip() or None
+    if hasta and not re.fullmatch(r"([01]\d|2[0-3]):[0-5]\d", hasta):
+        raise ValueError("La hora límite debe tener el formato HH:MM, por ejemplo 10:00.")
+    nota = " ".join(str(d.get("nota") or "").split()) or None
+    if nota and len(nota) > 200:
+        raise ValueError("La nota puede tener máximo 200 caracteres.")
+    return {"nombre": nombre, "categoria": categoria, "precio_min": pmin, "precio_max": pmax,
+            "vegetariano": veg, "disponible_hasta": hasta, "nota": nota,
+            "disponible": 0 if d.get("disponible") in (False, 0, "0", "false") else 1}
+
+
 def _texto_busqueda(p: dict) -> str:
     return " ".join([p["nombre"], p["categoria"], " ".join(p.get("opciones") or [])])
 
@@ -204,13 +247,68 @@ class Repositorio:
         with self._con() as con:
             filas = con.execute(
                 "SELECT p.id, p.nombre, p.categoria, p.precio_min, p.precio_max, p.vegetariano, p.disponible, "
-                "p.actualizado, p.establecimiento_id, p.catalogo_id, COALESCE(e.nombre, 'Todas las sedes de ' || "
+                "p.actualizado, p.establecimiento_id, p.catalogo_id, p.nota, p.disponible_hasta, COALESCE(e.nombre, 'Todas las sedes de ' || "
                 "(SELECT COALESCE(MAX(e2.marca), c.nombre) FROM establecimientos e2 WHERE e2.catalogo_id = c.id)) AS lugar "
                 "FROM productos p LEFT JOIN establecimientos e ON e.id = p.establecimiento_id "
                 "LEFT JOIN catalogos c ON c.id = p.catalogo_id "
                 "WHERE e.organizacion_id = ? OR c.organizacion_id = ? ORDER BY lugar, p.categoria, p.nombre",
                 (self.org, self.org)).fetchall()
         return [dict(f) for f in filas]
+
+    # --- destinos donde se pueden crear productos ------------------------------------
+    def destinos(self) -> list[dict]:
+        """Lugares de la organización donde se puede vender un producto: cada establecimiento
+        y cada catálogo compartido (el menú común de varias sedes)."""
+        with self._con() as con:
+            ests = con.execute("SELECT id, nombre, catalogo_id FROM establecimientos "
+                               "WHERE organizacion_id = ? AND activo = 1 ORDER BY rowid", (self.org,)).fetchall()
+            cats = con.execute("SELECT c.id, COALESCE(MAX(e.marca), c.nombre) AS marca, COUNT(e.id) AS sedes "
+                               "FROM catalogos c JOIN establecimientos e ON e.catalogo_id = c.id "
+                               "WHERE c.organizacion_id = ? GROUP BY c.id", (self.org,)).fetchall()
+        return ([{"tipo": "catalogo", "id": c["id"], "catalogo_id": c["id"],
+                  "nombre": f"Menú común de las {c['sedes']} sedes de {c['marca']}"} for c in cats]
+                + [{"tipo": "establecimiento", "id": e["id"], "establecimiento_id": e["id"],
+                    "nombre": e["nombre"]} for e in ests])
+
+    def crear_producto(self, destino: dict, datos: dict) -> dict:
+        """Crea un producto en un establecimiento o en un catálogo compartido de ESTA organización."""
+        v = _validar_producto(datos)
+        validos = {(d["tipo"], d["id"]) for d in self.destinos()}
+        if (destino.get("tipo"), destino.get("id")) not in validos:
+            raise ValueError("Ese lugar no existe en esta organización.")
+        est_id = destino["id"] if destino["tipo"] == "establecimiento" else None
+        cat_id = destino["id"] if destino["tipo"] == "catalogo" else None
+        nuevo_id = "p_" + secrets.token_hex(5)
+        with self._con() as con:
+            _insertar_producto(con, {"id": nuevo_id, **v, "disponible": bool(v["disponible"])},
+                               est_id, cat_id, datetime.now().isoformat(timespec="seconds"))
+        return {"ok": True, "id": nuevo_id}
+
+    def editar_producto(self, producto_id: str, datos: dict) -> dict:
+        """Actualiza todos los campos editables y el índice de búsqueda (el nombre puede cambiar)."""
+        v = _validar_producto(datos)
+        ahora = datetime.now().isoformat(timespec="seconds")
+        with self._con() as con:
+            fila = con.execute("SELECT opciones FROM productos WHERE id = ?", (producto_id,)).fetchone()
+            if not fila:
+                raise ValueError(f"No existe el producto '{producto_id}'.")
+            con.execute("UPDATE productos SET nombre=?, categoria=?, precio_min=?, precio_max=?, vegetariano=?, "
+                        "disponible_hasta=?, nota=?, disponible=?, actualizado=? WHERE id=?",
+                        (v["nombre"], v["categoria"], v["precio_min"], v["precio_max"], v["vegetariano"],
+                         v["disponible_hasta"], v["nota"], v["disponible"], ahora, producto_id))
+            opciones = json.loads(fila["opciones"]) if fila["opciones"] else []
+            con.execute("DELETE FROM productos_fts WHERE producto_id = ?", (producto_id,))
+            con.execute("INSERT INTO productos_fts (producto_id, texto) VALUES (?,?)",
+                        (producto_id, _texto_busqueda({**v, "opciones": opciones})))
+        return {"ok": True, "id": producto_id, "actualizado": ahora}
+
+    def eliminar_producto(self, producto_id: str) -> dict:
+        with self._con() as con:
+            cur = con.execute("DELETE FROM productos WHERE id = ?", (producto_id,))
+            if cur.rowcount == 0:
+                raise ValueError(f"No existe el producto '{producto_id}'.")
+            con.execute("DELETE FROM productos_fts WHERE producto_id = ?", (producto_id,))
+        return {"ok": True, "id": producto_id}
 
     def actualizar_producto(self, producto_id: str, precio_min, precio_max, disponible: bool) -> dict:
         def entero(v):
