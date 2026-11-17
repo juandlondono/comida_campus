@@ -4,6 +4,7 @@ Solo usa la librería estándar."""
 from __future__ import annotations
 
 import asyncio
+import http.client
 import json
 import time
 import urllib.error
@@ -38,10 +39,12 @@ def _post_una_vez(payload: dict) -> dict:
     req = urllib.request.Request(
         f"{config.LLM_BASE_URL}/chat/completions",
         data=json.dumps(payload).encode("utf-8"),
-                headers={
+        headers={
             "Content-Type": "application/json",
             "Accept": "application/json",
             "Authorization": f"Bearer {config.LLM_API_KEY}",
+            # Algunos proveedores (p. ej. Groq, detrás de Cloudflare) bloquean el identificador por
+            # defecto "Python-urllib" con el error 1010. Nos identificamos como la aplicación.
             "User-Agent": "comida-campus/1.0",
         },
         method="POST",
@@ -58,6 +61,9 @@ def _post_una_vez(payload: dict) -> dict:
                 espera = 10.0
             raise ErrorLimite(espera + 1, cuerpo) from e
         raise ErrorLLM(f"El LLM respondió HTTP {e.code}: {cuerpo}") from e
+    except (http.client.HTTPException, ConnectionError, TimeoutError) as e:
+        raise ErrorLLM(f"Se cortó la conexión con el LLM en {config.LLM_BASE_URL} ({type(e).__name__}). "
+                       "Revisa tu conexión a internet e inténtalo de nuevo.") from e
     except urllib.error.URLError as e:
         raise ErrorLLM(
             f"No pude conectarme al LLM en {config.LLM_BASE_URL} ({e.reason}). "

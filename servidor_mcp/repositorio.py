@@ -90,6 +90,18 @@ def _insertar_producto(con, p: dict, est_id, cat_id, ahora: str) -> None:
     con.execute("INSERT INTO productos_fts (producto_id, texto) VALUES (?,?)", (p["id"], _texto_busqueda(p)))
 
 
+def listar_organizaciones(ruta: Path = RUTA_BD) -> list[dict]:
+    """Organizaciones disponibles en la base de datos (para el selector de la interfaz)."""
+    if not ruta.exists():
+        crear_bd(ruta)
+    con = sqlite3.connect(ruta)
+    con.row_factory = sqlite3.Row
+    with con:
+        filas = con.execute("SELECT id, nombre, ciudad FROM organizaciones ORDER BY rowid").fetchall()
+    con.close()
+    return [dict(f) for f in filas]
+
+
 # ---------------------------------------------------------------------- repositorio
 class Repositorio:
     def __init__(self, ruta: Path = RUTA_BD, organizacion: str = ORG_POR_DEFECTO):

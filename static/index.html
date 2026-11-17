@@ -3,89 +3,254 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Comida Campus · Universidad de Ibagué</title>
+<title>Comida Campus</title>
 <style>
-  :root { --fondo:#f6f4ef; --tarjeta:#fff; --texto:#1f2421; --suave:#6b716d; --acento:#1d6b4f; --borde:#e3e0d8; }
-  * { box-sizing: border-box; }
-  body { margin:0; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; background:var(--fondo); color:var(--texto);
-         display:flex; flex-direction:column; height:100vh; }
-  header { padding:14px 20px; border-bottom:1px solid var(--borde); background:var(--tarjeta); display:flex; align-items:center; gap:12px; }
-  header h1 { font-size:17px; margin:0; }
-  header .info { font-size:12px; color:var(--suave); margin-left:auto; text-align:right; }
-  header button { border:1px solid var(--borde); background:none; border-radius:6px; padding:6px 10px; cursor:pointer; color:var(--suave); }
-  main { flex:1; overflow-y:auto; padding:20px; display:flex; flex-direction:column; gap:12px; max-width:820px; width:100%; margin:0 auto; }
-  .msg { max-width:85%; padding:10px 14px; border-radius:12px; line-height:1.45; white-space:pre-wrap; }
-  .usuario { align-self:flex-end; background:var(--acento); color:#fff; border-bottom-right-radius:3px; }
-  .bot { align-self:flex-start; background:var(--tarjeta); border:1px solid var(--borde); border-bottom-left-radius:3px; }
-  .traza { align-self:flex-start; font-size:12px; color:var(--suave); font-family: ui-monospace, Menlo, monospace;
-           background:#efece5; border-radius:8px; padding:6px 10px; max-width:85%; overflow-wrap:anywhere; }
-  .traza .err { color:#a33; }
-  .ejemplos { display:flex; flex-wrap:wrap; gap:8px; }
-  .ejemplos button { border:1px solid var(--borde); background:var(--tarjeta); border-radius:16px; padding:6px 12px; cursor:pointer; font-size:13px; }
-  form { display:flex; gap:8px; padding:14px 20px; border-top:1px solid var(--borde); background:var(--tarjeta); max-width:820px; width:100%; margin:0 auto; }
-  input { flex:1; padding:11px 14px; border:1px solid var(--borde); border-radius:8px; font-size:15px; }
-  form button { background:var(--acento); color:#fff; border:none; border-radius:8px; padding:0 18px; font-size:15px; cursor:pointer; }
-  form button:disabled { opacity:.5; }
+  :root {
+    --fondo:#f5f2ea; --tarjeta:#ffffff; --texto:#1d2420; --suave:#66706a; --tenue:#98a19b;
+    --acento:#1d6b4f; --acento-claro:#e4f0ea; --borde:#e4e0d6; --sombra:0 1px 2px rgba(29,36,32,.06), 0 4px 16px rgba(29,36,32,.05);
+  }
+  * { box-sizing:border-box; }
+  html, body { height:100%; }
+  body { margin:0; font-family:"Segoe UI", system-ui, -apple-system, sans-serif; background:var(--fondo); color:var(--texto);
+         display:flex; flex-direction:column; font-size:15px; }
+
+  header { background:var(--tarjeta); border-bottom:1px solid var(--borde); }
+  .barra { max-width:1000px; margin:0 auto; padding:12px 20px; display:flex; align-items:center; gap:14px; flex-wrap:wrap; }
+  .marca { display:flex; align-items:center; gap:10px; }
+  .logo { width:38px; height:38px; border-radius:11px; background:var(--acento); color:#fff; display:grid; place-items:center; font-size:20px; }
+  .marca h1 { font-size:17px; margin:0; letter-spacing:-.01em; }
+  .marca p { margin:0; font-size:12.5px; color:var(--suave); }
+  .controles { margin-left:auto; display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  select { max-width:250px; text-overflow:ellipsis; }
+  select, .boton-suave { font:inherit; font-size:13.5px; border:1px solid var(--borde); background:var(--tarjeta); color:var(--texto);
+         border-radius:999px; padding:7px 12px; cursor:pointer; text-decoration:none; }
+  .boton-suave:hover, select:hover { border-color:var(--tenue); }
+
+  main { flex:1; overflow-y:auto; }
+  .conversacion { max-width:860px; margin:0 auto; padding:24px 20px 12px; display:flex; flex-direction:column; gap:14px; }
+
+  .bienvenida { background:var(--tarjeta); border:1px solid var(--borde); border-radius:16px; padding:22px; box-shadow:var(--sombra); }
+  .bienvenida h2 { margin:0 0 6px; font-size:21px; letter-spacing:-.01em; }
+  .bienvenida p { margin:0 0 16px; color:var(--suave); line-height:1.5; }
+  .chips { display:flex; flex-wrap:wrap; gap:8px; }
+  .chips button { font:inherit; font-size:13.5px; text-align:left; border:1px solid var(--borde); background:var(--fondo);
+                  border-radius:12px; padding:9px 12px; cursor:pointer; color:var(--texto); }
+  .chips button:hover { border-color:var(--acento); background:var(--acento-claro); }
+
+  .fila { display:flex; }
+  .fila.usuario { justify-content:flex-end; }
+  .burbuja { max-width:82%; padding:11px 15px; border-radius:16px; line-height:1.5; overflow-wrap:anywhere; }
+  .usuario .burbuja { background:var(--acento); color:#fff; border-bottom-right-radius:5px; }
+  .bot .burbuja { background:var(--tarjeta); border:1px solid var(--borde); border-bottom-left-radius:5px; box-shadow:var(--sombra); }
+  .bot .burbuja p { margin:0 0 8px; } .bot .burbuja p:last-child { margin-bottom:0; }
+  .bot .burbuja ul, .bot .burbuja ol { margin:4px 0 8px; padding-left:20px; }
+  .bot .burbuja li { margin:4px 0; }
+  .bot .burbuja strong { font-weight:650; }
+  .bot .burbuja code { background:var(--fondo); padding:1px 5px; border-radius:4px; font-size:13px; }
+  .error .burbuja { border-color:#e6c3c3; background:#fdf5f5; }
+
+  .meta { font-size:12px; color:var(--tenue); margin:6px 4px 0; display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+  .meta button { font:inherit; font-size:12px; color:var(--suave); background:none; border:none; padding:0; cursor:pointer; text-decoration:underline; }
+  .traza { display:none; margin:8px 4px 0; padding:10px 12px; background:#efebe1; border-radius:10px; font-size:12px;
+           font-family:ui-monospace, Consolas, monospace; color:var(--suave); word-break:break-all; line-height:1.55; }
+  .traza.abierta { display:block; }
+  .traza .ignorado { color:#9a6b12; }
+  .columna { display:flex; flex-direction:column; max-width:82%; }
+  .columna .burbuja { max-width:100%; }
+
+  .escribiendo { display:flex; align-items:center; gap:10px; color:var(--suave); font-size:13.5px; }
+  .puntos { display:flex; gap:4px; background:var(--tarjeta); border:1px solid var(--borde); border-radius:14px; padding:12px 14px; }
+  .puntos span { width:7px; height:7px; border-radius:50%; background:var(--tenue); animation:salto 1s infinite ease-in-out; }
+  .puntos span:nth-child(2) { animation-delay:.15s; } .puntos span:nth-child(3) { animation-delay:.3s; }
+  @keyframes salto { 0%,80%,100% { transform:translateY(0); opacity:.5; } 40% { transform:translateY(-4px); opacity:1; } }
+
+  footer { background:var(--fondo); }
+  form { max-width:860px; margin:0 auto; padding:10px 20px 18px; display:flex; gap:10px; }
+  form input { flex:1; font:inherit; padding:13px 16px; border:1px solid var(--borde); border-radius:14px; background:var(--tarjeta);
+               box-shadow:var(--sombra); outline:none; }
+  form input:focus { border-color:var(--acento); }
+  form button { background:var(--acento); color:#fff; border:none; border-radius:14px; padding:0 20px; font:inherit; font-weight:600; cursor:pointer; }
+  form button:disabled { opacity:.45; cursor:default; }
+  .pie { text-align:center; font-size:11.5px; color:var(--tenue); padding:0 20px 10px; }
+
+  @media (max-width:600px) {
+    .controles { margin-left:0; width:100%; }
+    .burbuja, .columna { max-width:92%; }
+  }
 </style>
 </head>
 <body>
 <header>
-  <h1>🍽️ Comida Campus</h1>
-  <button id="reiniciar" title="Borrar la conversación">Nueva conversación</button>
-  <a href="/admin" target="_blank" style="font-size:13px;color:var(--suave)">Panel de vendedores</a>
-  <div class="info" id="info">cargando…</div>
+  <div class="barra">
+    <div class="marca">
+      <div class="logo">🍽️</div>
+      <div><h1>Comida Campus</h1><p id="lema">Qué comer, cerca y a tu medida</p></div>
+    </div>
+    <div class="controles">
+      <select id="org" title="Lugar"></select>
+      <button class="boton-suave" id="reiniciar">Nueva conversación</button>
+      <a class="boton-suave" id="panel" href="/admin" target="_blank">Para vendedores</a>
+    </div>
+  </div>
 </header>
-<main id="chat">
-  <div class="msg bot">¡Hola! Dime cuánto dinero y tiempo tienes, dónde estás y si tienes alguna preferencia, y te recomiendo qué comer en el campus.</div>
-  <div class="ejemplos" id="ejemplos">
-    <button>Tengo 10.000 pesos y 15 minutos, estoy en Ingeniería y quiero algo vegetariano</button>
-    <button>¿Dónde puedo comprar fresas con chocolate?</button>
-    <button>¿En qué cafetería puedo comprar un almuerzo?</button>
-    <button>¿Qué puedo comprar con $5.000?</button>
-    <button>¿Qué bebidas frías hay en María Café?</button>
+
+<main id="scroll">
+  <div class="conversacion" id="chat">
+    <div class="bienvenida" id="bienvenida">
+      <h2>¿Qué se te antoja hoy?</h2>
+      <p>Cuéntame cuánto quieres gastar, dónde estás y si tienes alguna preferencia. Te recomiendo opciones reales, con precio y lugar.</p>
+      <div class="chips" id="chips"></div>
+    </div>
   </div>
 </main>
-<form id="form">
-  <input id="entrada" placeholder="Escribe tu pregunta…" autocomplete="off" autofocus>
-  <button id="enviar">Enviar</button>
-</form>
-<script>
-const chat = document.getElementById('chat'), entrada = document.getElementById('entrada'), enviar = document.getElementById('enviar');
 
-function agregar(clase, texto) {
-  const d = document.createElement('div'); d.className = clase; d.textContent = texto;
-  chat.appendChild(d); chat.scrollTop = chat.scrollHeight; return d;
+<footer>
+  <form id="form">
+    <input id="entrada" placeholder="Ej.: tengo 10 mil y quiero algo vegetariano" autocomplete="off" autofocus>
+    <button id="enviar">Enviar</button>
+  </form>
+  <div class="pie" id="pie"></div>
+</footer>
+
+<script>
+const EJEMPLOS = {
+  unibague: [
+    'Tengo 10.000 pesos y 15 minutos, estoy en Ingeniería y quiero algo vegetariano',
+    '¿Dónde puedo comprar fresas con chocolate?',
+    '¿En qué cafetería puedo almorzar?',
+    '¿Qué bebidas hay en María Café?',
+  ],
+  demo_torre: [
+    'Estoy en el piso 8 y tengo 12 mil, ¿qué como?',
+    '¿Hay almuerzo vegetariano?',
+    'Quiero un café y algo de panadería',
+  ],
+};
+const GENERICOS = ['¿Qué puedo comer con 10 mil?', '¿Qué opciones vegetarianas hay?', '¿Dónde puedo almorzar?'];
+
+const chat = document.getElementById('chat'), scroll = document.getElementById('scroll');
+const entrada = document.getElementById('entrada'), enviar = document.getElementById('enviar');
+const selOrg = document.getElementById('org');
+let ORG = new URLSearchParams(location.search).get('org') || '';
+
+// --- Markdown mínimo y seguro: se escapa todo el HTML y solo se permiten negritas, cursivas, código y listas.
+const esc = t => t.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const enLinea = t => esc(t)
+  .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+  .replace(/(^|[^*])\*(?!\s)(.+?)\*(?!\*)/g, '$1<em>$2</em>')
+  .replace(/`(.+?)`/g, '<code>$1</code>');
+function markdown(texto) {
+  const lineas = (texto || '').replace(/\r/g, '').split('\n');
+  let html = '', lista = null, parrafo = [];
+  const cerrarParrafo = () => { if (parrafo.length) { html += '<p>' + parrafo.map(enLinea).join('<br>') + '</p>'; parrafo = []; } };
+  const cerrarLista = () => { if (lista) { html += `</${lista}>`; lista = null; } };
+  for (const cruda of lineas) {
+    const l = cruda.trim();
+    const ul = l.match(/^[-*•]\s+(.*)$/), ol = l.match(/^\d+[.)]\s+(.*)$/), titulo = l.match(/^#{1,6}\s+(.*)$/);
+    if (!l) { cerrarParrafo(); cerrarLista(); continue; }
+    if (/^\|?[\s:-]+\|[\s|:-]*$/.test(l)) continue;           // separadores de tablas
+    if (ul || ol) {
+      cerrarParrafo();
+      const tipo = ul ? 'ul' : 'ol';
+      if (lista !== tipo) { cerrarLista(); html += `<${tipo}>`; lista = tipo; }
+      html += '<li>' + enLinea((ul || ol)[1]) + '</li>';
+      continue;
+    }
+    cerrarLista();
+    if (titulo) { cerrarParrafo(); html += '<p><strong>' + enLinea(titulo[1]) + '</strong></p>'; continue; }
+    parrafo.push(l.replace(/^\||\|$/g, '').replace(/\s*\|\s*/g, ' · '));  // filas de tabla -> texto
+  }
+  cerrarParrafo(); cerrarLista();
+  return html;
 }
-function agregarTraza(r) {
-  if (!r.trazas || !r.trazas.length) return;
-  const d = document.createElement('div'); d.className = 'traza';
-  d.innerHTML = r.trazas.map(t => {
-    let linea = `🔧 ${t.herramienta}(${JSON.stringify(t.argumentos)}) · ${t.latencia_ms} ms`;
-    if (t.descartados && t.descartados.length) linea += ` · ignorados (no los dijiste): ${t.descartados.join(', ')}`;
-    const span = document.createElement('span'); span.textContent = linea; if (!t.ok) span.className = 'err';
-    return span.outerHTML;
-  }).join('<br>') + `<br>⏱️ ${r.latencia_ms} ms en total · ${r.pasos} paso(s)`;
-  chat.appendChild(d);
+
+function abajo() { scroll.scrollTop = scroll.scrollHeight; }
+
+function mensajeUsuario(texto) {
+  const f = document.createElement('div'); f.className = 'fila usuario';
+  const b = document.createElement('div'); b.className = 'burbuja'; b.textContent = texto;
+  f.appendChild(b); chat.appendChild(f); abajo();
 }
+
+function mensajeBot(r) {
+  const f = document.createElement('div'); f.className = 'fila bot' + (r.error ? ' error' : '');
+  const col = document.createElement('div'); col.className = 'columna';
+  const b = document.createElement('div'); b.className = 'burbuja';
+  b.innerHTML = markdown(r.texto || r.error || 'No obtuve respuesta.');
+  col.appendChild(b);
+  if (!r.error) {
+    const meta = document.createElement('div'); meta.className = 'meta';
+    const seg = r.latencia_ms < 100 ? 'menos de 0,1' : (r.latencia_ms / 1000).toLocaleString('es-CO', {maximumFractionDigits: 1});
+    meta.innerHTML = `<span>Respondió en ${seg} s</span>`;
+    if (r.trazas && r.trazas.length) {
+      const traza = document.createElement('div'); traza.className = 'traza';
+      traza.innerHTML = r.trazas.map(t => {
+        let linea = `🔧 ${esc(t.herramienta)}(${esc(JSON.stringify(t.argumentos))}) · ${t.latencia_ms} ms`;
+        if (t.descartados && t.descartados.length)
+          linea += ` <span class="ignorado">· ignorados (el usuario no los dijo): ${esc(t.descartados.join(', '))}</span>`;
+        return linea;
+      }).join('<br>') + `<br>Herramientas MCP consultadas: ${r.trazas.length} · pasos del agente: ${r.pasos}`;
+      const boton = document.createElement('button'); boton.type = 'button'; boton.textContent = '¿Cómo lo encontré?';
+      boton.onclick = () => { traza.classList.toggle('abierta'); abajo(); };
+      meta.appendChild(document.createTextNode('·')); meta.appendChild(boton);
+      col.appendChild(meta); col.appendChild(traza);
+    } else { col.appendChild(meta); }
+  }
+  f.appendChild(col); chat.appendChild(f); abajo();
+}
+
+function escribiendo() {
+  const f = document.createElement('div'); f.className = 'fila bot';
+  f.innerHTML = '<div class="escribiendo"><div class="puntos"><span></span><span></span><span></span></div>Buscando en los menús…</div>';
+  chat.appendChild(f); abajo(); return f;
+}
+
 async function preguntar(texto) {
-  document.getElementById('ejemplos')?.remove();
-  agregar('msg usuario', texto);
-  const pensando = agregar('msg bot', 'Consultando…');
-  enviar.disabled = true;
+  document.getElementById('bienvenida')?.remove();
+  mensajeUsuario(texto);
+  const espera = escribiendo();
+  enviar.disabled = true; entrada.disabled = true;
   try {
-    const resp = await fetch('/api/chat', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({mensaje: texto})});
+    const resp = await fetch('/api/chat', {method:'POST', headers:{'Content-Type':'application/json'},
+                                           body: JSON.stringify({mensaje: texto, org: ORG})});
     const r = await resp.json();
-    pensando.remove(); agregarTraza(r); agregar('msg bot', r.texto || r.error || '(sin respuesta)');
-  } catch (e) { pensando.textContent = '⚠️ No se pudo contactar al servidor.'; }
-  enviar.disabled = false; entrada.focus();
+    espera.remove(); mensajeBot(r);
+  } catch (e) {
+    espera.remove(); mensajeBot({error: 'No pude contactar al servidor. ¿Sigue abierto `python web.py`?'});
+  }
+  enviar.disabled = false; entrada.disabled = false; entrada.focus();
 }
-document.getElementById('form').onsubmit = e => { e.preventDefault(); const t = entrada.value.trim(); if (t) { entrada.value=''; preguntar(t); } };
-document.querySelectorAll('#ejemplos button').forEach(b => b.onclick = () => preguntar(b.textContent));
-document.getElementById('reiniciar').onclick = async () => { await fetch('/api/reiniciar', {method:'POST'}); location.reload(); };
-fetch('/api/reiniciar', {method:'POST'});  // pantalla nueva = conversación nueva
-fetch('/api/info').then(r => r.json()).then(i => {
-  document.getElementById('info').textContent = `${i.organizacion} · ${i.modo} · modelo ${i.modelo} · ${i.herramientas.length} herramientas MCP`;
-});
+
+function pintarChips() {
+  const cont = document.getElementById('chips'); if (!cont) return;
+  cont.innerHTML = '';
+  (EJEMPLOS[ORG] || GENERICOS).forEach(t => {
+    const b = document.createElement('button'); b.type = 'button'; b.textContent = t; b.onclick = () => preguntar(t);
+    cont.appendChild(b);
+  });
+}
+
+async function iniciar() {
+  const d = await (await fetch('/api/organizaciones')).json();
+  if (!ORG) ORG = d.por_defecto;
+  d.organizaciones.forEach(o => {
+    const op = document.createElement('option'); op.value = o.id; op.textContent = '📍 ' + o.nombre;
+    if (o.id === ORG) op.selected = true; selOrg.appendChild(op);
+  });
+  document.getElementById('panel').href = '/admin?org=' + encodeURIComponent(ORG);
+  pintarChips();
+  await fetch('/api/reiniciar', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({org: ORG})});
+  const i = await (await fetch('/api/info?org=' + encodeURIComponent(ORG))).json();
+  document.getElementById('pie').textContent =
+    `${i.organizacion} · modelo ${i.modelo} · ${i.herramientas.length} herramientas MCP · las recomendaciones salen de los menús registrados`;
+}
+
+selOrg.onchange = () => { location.search = '?org=' + encodeURIComponent(selOrg.value); };
+document.getElementById('reiniciar').onclick = () => location.reload();
+document.getElementById('form').onsubmit = e => {
+  e.preventDefault(); const t = entrada.value.trim(); if (t) { entrada.value = ''; preguntar(t); }
+};
+iniciar();
 </script>
 </body>
 </html>

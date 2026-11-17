@@ -32,8 +32,8 @@
 <body>
 <header>
   <h1>🧾 Panel de vendedores</h1>
-  <span class="org" id="org">cargando…</span>
-  <a href="/" target="_blank">Abrir el chatbot</a>
+  <select id="selorg" style="padding:6px 10px;border:1px solid var(--borde);border-radius:999px;font-size:13px;background:#fff"></select>
+  <a href="/" id="abrir" target="_blank">Abrir el chatbot</a>
 </header>
 <main>
   <p class="nota">Los cambios se guardan en la base de datos y el chatbot los usa en la siguiente pregunta. Precios en pesos; deja "máx." vacío si el precio es "desde".</p>
@@ -48,6 +48,7 @@
 </main>
 <script>
 let productos = [];
+let ORG = new URLSearchParams(location.search).get('org') || '';
 const filas = document.getElementById('filas'), buscar = document.getElementById('buscar'), lugar = document.getElementById('lugar');
 const norm = t => (t || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
 
@@ -73,7 +74,7 @@ function pintar() {
     btn.onclick = async () => {
       btn.disabled = true; estado.textContent = 'guardando…'; estado.className = 'estado';
       const r = await fetch('/api/admin/producto', {method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({id: p.id, precio_min: pmin.value, precio_max: pmax.value, disponible: disp.checked})});
+        body: JSON.stringify({org: ORG, id: p.id, precio_min: pmin.value, precio_max: pmax.value, disponible: disp.checked})});
       const d = await r.json();
       if (r.ok) {
         Object.assign(p, {precio_min: pmin.value === '' ? null : +pmin.value, precio_max: pmax.value === '' ? null : +pmax.value, disponible: disp.checked ? 1 : 0});
@@ -85,8 +86,14 @@ function pintar() {
   });
 }
 
-fetch('/api/admin/productos').then(r => r.json()).then(d => {
-  document.getElementById('org').textContent = d.organizacion;
+fetch('/api/organizaciones').then(r => r.json()).then(o => {
+  if (!ORG) ORG = o.por_defecto;
+  const sel = document.getElementById('selorg');
+  o.organizaciones.forEach(x => { const op = document.createElement('option'); op.value = x.id; op.textContent = '📍 ' + x.nombre; op.selected = x.id === ORG; sel.appendChild(op); });
+  sel.onchange = () => { location.search = '?org=' + encodeURIComponent(sel.value); };
+  document.getElementById('abrir').href = '/?org=' + encodeURIComponent(ORG);
+  return fetch('/api/admin/productos?org=' + encodeURIComponent(ORG));
+}).then(r => r.json()).then(d => {
   productos = d.productos;
   [...new Set(productos.map(p => p.lugar))].forEach(n => { const o = document.createElement('option'); o.value = o.textContent = n; lugar.appendChild(o); });
   pintar();
